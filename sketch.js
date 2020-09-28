@@ -4,7 +4,7 @@ let shrekx, shreky, ground, size, shrek, bad_word, walks, walkbacks, idle_on, ju
 let thenomions = []
 let speed = 6; //speed of walking
 let jump_power = 6; //speed of elevation when jumping
-let jump_height = 16;//height and length of jump
+let jump_height = 30;//height and length of jump
 let jump = true;
 let jump_stage = 0;
 let gravity = 12; //
@@ -22,7 +22,9 @@ let attack_use = false;
 let attack_delay = 300;
 let direction = "right";
 let points = 0;
-let delay = 0
+let delay = 0;
+let spawn_counter = 2000;
+let spawn_delay = 2000;
 
 
 function preload() {
@@ -51,13 +53,19 @@ function setup() {
   shreky = ground / 2;
   size = height * 0.2;
   imageMode(CENTER);
-  window.setInterval(spawn_nomions, 2000);
   edges = [width, 0];
   bgm.play();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|Initializing processes finished--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 function draw() {
   background(0);
+  if (millis()>(spawn_counter+spawn_delay)){
+    spawn_nomions()
+    spawn_counter = millis()
+    if (spawn_delay>700){
+    spawn_delay -= (nomion_speed*2)
+    }
+    }
   attack_check();
   //Checks if a  forbidden word has been typed
   if (uwu_active) {
@@ -171,6 +179,12 @@ function draw() {
       imageMode(CENTER);
       image(dead, width / 2, height / 2, height / 0.75, height);
     }
+    textSize(200);
+    textAlign(CENTER);
+    textStyle(BOLD);
+    textFont('Verdana');
+    fill("#b3d10c");
+    text(points, width/2, height/2);
   }
 }
 
@@ -217,7 +231,7 @@ function noms() {
         if (collideRectCircle((shrekx - ((width * 0.1) / 4) - (size / 4)), shreky - ((height * 0.1) / 4), size / 4, size / 4, nomion.nomx, nomion.nomy, size)) {
           if (nomion.nomion_lives) {
             nomion.nomion_lives = false;
-            nomion_speed += 0.1;
+            nomion_speed += 0.4;
             points++;
           }
         }
@@ -227,7 +241,7 @@ function noms() {
         if (collideRectCircle((shrekx - ((width * 0.1) / 4) + (size / 4)), shreky - ((height * 0.1) / 4), size / 4, size / 4, nomion.nomx, nomion.nomy, size)) {
           if (nomion.nomion_lives) {
             nomion.nomion_lives = false;
-            nomion_speed += 0.1;
+            nomion_speed += 0.4;
             points++;
           }
         }
@@ -411,6 +425,11 @@ function attack_check() {
     direction = "right"
     key = "p";
   }
+  else if (key === "S"){
+    
+    attack(direction);
+    key = "p";
+  }
   if (((key === "U") || (key === "W") || (key === "O")) && (!(keyIsPressed))) {
 
     uwu_log += key;
@@ -422,6 +441,10 @@ function attack_check() {
       //^^^Deactivate in final code
     }
 
+  }
+  if (key === "M"){
+    bgm.stop()
+    key = "p"
   }
 }
 
