@@ -3,6 +3,7 @@
 let grid;
 let cellWidth;
 let cellHeight;
+const GRIDSIZE = 10;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -31,10 +32,10 @@ function mousePressed() {
 
 function keyPressed() {
   if (key === " ") {
-    grid = generateRandomGrid(10);
+    grid = generateRandomGrid(GRIDSIZE);
   }
   if (key === "c"){
-    grid = generateEmptyGrid(10);
+    grid = generateEmptyGrid(GRIDSIZE);
   }
 }
 
@@ -80,3 +81,34 @@ function generateEmptyGrid(gridSize) {
   }
   return grid;
 }
+
+//Inverts cell (IF within established grid)
+function toggleCell(cellX, cellY) {
+  if (cellX >= 0 && cellX < GRIDSIZE && cellY >= 0 && cellY < GRIDSIZE) {
+    if (grid[cellY][cellX] === 0) {
+      grid[cellY][cellX] = 1;
+    }
+    else {
+      grid[cellY][cellX] = 0;
+    }
+  }
+}
+
+
+for (let y=0; y<GRIDSIZE; y++) {
+  for (let x=0; x<GRIDSIZE; x++) {
+    
+
+    //checks square around starting point
+    for (let i=-1; i<=1; i++) {
+      for (let j=-1; j<=1; j++) {
+        if (y+i >= 0 && y+i < GRIDSIZE && x+j >=0 && x+j < GRIDSIZE) {
+          //
+        }
+      }
+    } 
+
+    
+    
+    }
+  }
