@@ -4,37 +4,36 @@
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
-const sudoku = [[5,3,0,0,7,0,0,0,0],
-              [6,0,0,1,9,5,0,0,0],
-              [0,9,8,0,0,0,0,6,0],
-              [8,0,0,0,6,0,0,0,3],
-              [4,0,0,8,0,3,0,0,1],
-              [7,0,0,0,2,0,0,0,5],
-              [0,6,0,0,0,0,2,8,0],
-              [0,0,0,4,1,9,0,0,5],
-              [0,0,0,0,8,0,0,7,9]];
+let sudoku, backup ;
+let GRIDBIG = 9
 
-const backup = [[5,3,0,0,7,0,0,0,0],
-              [6,0,0,1,9,5,0,0,0],
-              [0,9,8,0,0,0,0,6,0],
-              [8,0,0,0,6,0,0,0,3],
-              [4,0,0,8,0,3,0,0,1],
-              [7,0,0,0,2,0,0,0,5],
-              [0,6,0,0,0,0,2,8,0],
-              [0,0,0,4,1,9,0,0,5],
-              [0,0,0,0,8,0,0,7,9]];
-const GRIDBIG = sudoku.length
 let cell_size;
 
+function preload(){
+  sudoku = loadStrings("assets/1.txt")
+  backup = loadStrings("assets/1.txt")
+  GRIDBIG = sudoku.length;
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-if (width < height){
-  cell_size = width/GRIDBIG
-}
-else{
-  cell_size = height/GRIDBIG
-}
+  for (let i = 0; i<sudoku.length; i++){
+    sudoku[i] = sudoku[i].split(",");
+    backup[i] = backup[i].split(",");
+  }
+  // for(let y = 0; y< GRIDBIG; y++){
+  //   for(let x = 0; x< GRIDBIG; x++){
+  //     sudoku[y][x] = int(sudoku[y][x])
+  //     backup[y][x] = int(backup[y][x])
+  //   }
+  // }
+
+  if (width < height){
+    cell_size = width/GRIDBIG
+  }
+  else{
+    cell_size = height/GRIDBIG
+  }
   
 }
 
@@ -78,9 +77,8 @@ function mousePressed(){
   change_cell(cell_y, cell_x);
 }
 
-function change_cell(cell_y, cell_x){
- 
+function change_cell(sell_y, sell_x){
+  if ((sudoku[sell_y][sell_x] !== backup[sell_y][sell_x])|| (sudoku[sell_y][sell_x] === 0)){
+    sudoku[sell_y][sell_x] = (sudoku[sell_y][sell_x] +1)%10
 }
-  if ((sudoku[cell_y][cell_x] !== backup[cell_y][cell_x])|| (sudoku[cell_y][cell_x] === 0)){
-    sudoku[cell_y][cell_x] = (sudoku[cell_y][cell_x] +1)%10
 }
