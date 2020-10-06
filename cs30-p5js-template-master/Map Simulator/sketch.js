@@ -1,39 +1,20 @@
 
 
 
-let map;
-let initialState;
-
-let MAPSIZE;
-let tile_size;
-let grass, tall_grass, ledge, ledge_left, ledge_right, ledge_right_corner, ledge_right_middle, ledge_right_top, big_tree_bottom_left, big_tree_bottom_right, big_tree_middle_left, big_tree_middle_right, big_tree_top_left, big_tree_top_right, water_bottom, water, water_center_left, water_center_right, water_top_left, water_top_middle, water_top_right, tree_bottom, tree_top;
-// Tile list
-// 0 = grass
-// 1 = tall_grass
-// 2 = ledge
-// 3 = tall_tree_bottom
-// 4 = tall_tree_top
-// 8 = flowers
-// 21 = ledge_left
-// 22 = ledge_right
-// 23 = ledge_right_corner
-// 24 = ledge_right_middle
-// 25 = ledge_right_top
-// 41 = water_up_left
-// 42 = water_up_center
-// 43 = water_up_right
-// 44 = water_middle_left
-// 45 = water_neutral
-// 46 = water_middle_right
-// 48 = water_bottom
-// 51 = big_tree_top_left
-// 52 = big_tree_top_right
-// 53 = big_tree_middle_left
-// 54 = big_tree_middle_right
-// 55 = big_tree_bottom_left
-// 56 = big_tree_bottom_right
-function preload() {
+let map, MAPX, MAPY, tile_size, wes_front, wes_back, wes_left, wes_right, grass, tall_grass, ledge, ledge_left, ledge_right, ledge_right_corner, ledge_right_middle, ledge_right_top, big_tree_bottom_left, big_tree_bottom_right, big_tree_middle_left, big_tree_middle_right, big_tree_top_left, big_tree_top_right, water_bottom, water, water_center_left, water_center_right, water_top_left, water_top_middle, water_top_right, tree_bottom, tree_top;
+//lot of variables that need to be created yet are unusable at this point
+let playerX = 6;
+let playerY = 5;
+let player_faces = "down"
+let frame = 0
+function preload() { 
+  // Loads all files used in the program before usage to prevent potential future issues with loading and callbacks, setting them to the blank variables listed above
   map = loadStrings("tiles/map_1.txt");
+  col_map = loadStrings("tiles/map_1_collision.txt")
+  wes_front = [loadImage("sprites/wes_ow_front.png"), loadImage("sprites/wes_ow_front_1.png"),loadImage("sprites/wes_ow_front.png"), loadImage("sprites/wes_ow_front_2.png")];
+  wes_back = [loadImage("sprites/wes_ow_back.png"), loadImage("sprites/wes_ow_back_1.png"),loadImage("sprites/wes_ow_back.png"), loadImage("sprites/wes_ow_back_2.png")]
+  wes_left = [loadImage("sprites/wes_ow_left.png"), loadImage("sprites/wes_ow_left_1.png")]
+  wes_right = [loadImage("sprites/wes_ow_right.png"), loadImage("sprites/wes_ow_right_1.png")]
   grass = loadImage("tiles/grass.png");
   tall_grass = loadImage("tiles/tall_grass.png");
   ledge = loadImage("tiles/ledge_center.png");
@@ -62,26 +43,29 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-
+  frameRate(4)
   // converts string list to tileset
   for (let i=0; i<map.length; i++) {
     map[i] = map[i].split(",");
-    //initialState[i] = initialState[i].split(",");
+    col_map[i] = col_map[i].split(",");
+
+    
   }
+  //defines the length and width of the grid
   MAPY = map[0].length; //16
   MAPX = map.length; //12
 
-3
-  //loop through the whole 2d array, and turn everything to numbers
+
+  //loop through the whole tileset, turning the stings into more usable numeric values
   for (let x=0; x<MAPX; x++) {
     for (let y=0; y<MAPY; y++) {
       map[x][y] = int(map[x][y]);
-      //initialState[x][y] = int(initialState[x][y]);
+      col_map[x][y] = int(col_map[x][y]);
+      
     }
   }
-
   if (width < height) {
-    tile_size = width / MAPX;
+    tile_size = width / MAPY;
   }
   else {
     tile_size = height / MAPX;
@@ -89,23 +73,16 @@ function setup() {
 }
 
 function draw() {
-  background(220);
+  background(255);
   displayGrid();
+  displayPlayer();
 }
 
 function displayGrid() {
   //squares and numbers
   for (let y=0; y<MAPY; y++) {
     for (let x=0; x<MAPX; x++) {
-      //rect(x*tile_size, y*tile_size, tile_size, tile_size);
-
-
-// 51 = big_tree_top_left
-// 52 = big_tree_top_right
-// 53 = big_tree_middle_left
-// 54 = big_tree_middle_right
-// 55 = big_tree_bottom_left
-// 56 = big_tree_bottom_right
+      //Displays the appropriate tile for the number on the map_1.txt file
       if (map[x][y] === 0) {
         image(grass, y*tile_size, x*tile_size, tile_size, tile_size)
         }
@@ -191,16 +168,103 @@ function displayGrid() {
   
 }            
 
-// function mousePressed() {
-//   let cellX = floor(mouseX / tile_size);
-//   let cellY = floor(mouseY / tile_size);
+function keyPressed(){
+  let player_faced = player_faces;
 
-//   changeCell(cellX, cellY);
-// }
+  if (key === "a"){
+    player_faces = "left";
+    if (col_map[playerX][playerY-1]===0 || col_map[playerX][playerY-1]===4){
+      playerY--;
+    }
+  }
 
-// function changeCell(x, y) {
-//   if (map[x][y] !== initialState[x][y] || map[x][y] === 0) {
-//     //don't go into double digits
-//     map[x][y] = (map[x][y] + 1) % 10;
-//   }
-// }
+  if (key === "d"){
+    player_faces = "right";
+    if(col_map[playerX][playerY+1]===0 || col_map[playerX][playerY+1]===3 || col_map[playerX][playerY+1]===4){
+      playerY++;
+      while (col_map[playerX][playerY]===3){
+        playerY++;
+      }
+    }
+  }
+
+  if (key === "w"){
+    player_faces = "up";
+    if(col_map[playerX-1][playerY]===0 || col_map[playerX-1][playerY]===4){
+      playerX--;
+      }
+  }
+  
+  if (key === "s"){
+    player_faces = "down";
+    if (col_map[playerX+1][playerY]===0 || col_map[playerX+1][playerY]===2 || col_map[playerX+1][playerY]===4){
+      playerX++;
+      while (col_map[playerX][playerY]===2){
+        playerX++;
+      }
+    }
+
+  }
+  if (player_faced !== player_faces){
+    frame = 0;
+  }
+}
+
+function keyTyped()
+
+function displayPlayer(){
+  //imageMode(CENTER)
+  if (player_faces === "down"){
+    if (keyIsPressed && key === "s"){
+      if (frame < 3){
+        frame ++;}
+      else{
+        frame = 0;
+      }
+    }
+    else{
+      frame = 0;
+    }
+    image(wes_front[frame], playerY*tile_size, playerX*tile_size-(tile_size*0.3), tile_size, tile_size*1.3)
+  }
+  else if (player_faces === "up"){
+    if (keyIsPressed && key === "w"){
+      if (frame < 3){
+        frame ++;}
+      else{
+        frame = 0;
+      }
+    }
+    else{
+      frame = 0;
+    }
+    image(wes_back[frame], playerY*tile_size, playerX*tile_size-(tile_size*0.3), tile_size, tile_size*1.3)
+   }
+  else if (player_faces === "right"){
+    if (keyIsPressed && key === "d"){
+      if (frame < 1){
+        frame ++;}
+      else{
+        frame = 0;
+      }
+    }
+    else{
+      frame = 0;
+    }
+    image(wes_right[frame], playerY*tile_size, playerX*tile_size-(tile_size*0.3), tile_size, tile_size*1.3)
+  }
+  else if (player_faces === "left"){
+    if (keyIsPressed && key === "a"){
+      if (frame < 1){
+        frame ++;}
+      else{
+        frame = 0;
+      }
+    }
+    else{
+      frame = 0;
+    }
+    image(wes_left[frame], playerY*tile_size, playerX*tile_size-(tile_size*0.3), tile_size, tile_size*1.3)
+  }
+  
+}

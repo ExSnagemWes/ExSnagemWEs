@@ -4,8 +4,14 @@
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
+//https://github.com/smogon/damage-calc/blob/master/calc/src/mechanics/gen12.ts(line 157)
+//line 255 equation copied and slightly modified for variables that would be predefined in this instance
 
 //Convenience. Pressing shift constantly really slows me down
+let physical = "ph"
+let special = "sp"
+let healing = "heal"
+let boost = "boost"
 let normal = "Normal";
 let bug = "Bug";
 let grass = "Grass";
@@ -24,79 +30,14 @@ let ground = "Ground";
 let rock = "Rock";
 let flying = "Flying";
 let electric = "Electric";
-let none = "---"
+let none = "---";
+let critical = false;
 
-
-
-
-let damage = 0;
-pokemon = {
-  dragonite: {
-  sprites: [loadImage("sprites/dragonite_front.png"), loadImage("sprites/dragonite_back.png")],
-  hp: 91,
-  attack: 404,
-  defense: 95,
-  sp_attack: 266,
-  sp_def: 100,
-  //128 speed IVS
-  speed: 80,
-  type_1: dragon,
-  type_2: flying,
-  move_1: moves_list.dragon_claw,
-  move_2: moves_list.hurricane,
-  move_3: moves_list.extreme_speed,
-  move_4: moves_list.roost
-},
-garchomp: {
-  sprites: [loadImage("sprites/garchomp_front.png"), loadImage("sprites/garchomp_back.png")],
-  hp: 421,
-  attack: 359,
-  defense: 95,
-  sp_attack: 80,
-  sp_def: 85,
-  speed: 333,
-  type_1: dragon,
-  type_2: ground,
-  move_1: moves_list.dragon_claw,
-  move_2: moves_list.earthquake,
-  move_3: moves_list.iron_head,
-  move_4: moves_list.swords_dance
-},
-charizard: {
-  sprites: [loadImage("sprites/charizard_front.png"), loadImage("sprites/charizard_back.png")],
-  hp: 78,
-  attack: 84,
-  defense: 75,
-  sp_attack: 109,
-  sp_def: 85,
-  speed: 328,
-  type_1: fire,
-  type_2: flying,
-  move_1: moves_list.flamethrower,
-  move_2: moves_list.dragon_pulse,
-  move_3: moves_list.air_slash,
-  move_4: moves_list.focus_blast
-},
-blastoise: {
-  sprites: [loadImage("sprites/blastoise_front.png"), loadImage("sprites/blastoise_back.png")],
-  hp: 82,
-  attack:78,
-  defense: 100,
-  sp_attack: 85,
-  sp_def: 105,
-  speed: 78,
-  type_1: water,
-  type_2: none,
-  move_1: moves_list.hydro_pump,
-  move_2: moves_list.dragon_pulse,
-  move_3: moves_list.ice_beam,
-  move_4: moves_list.aura_sphere
-}
-}
 
 
 let moves_list = {
   dragon_claw: {
+    name: "Dragon Claw",
     type: dragon, 
     power: 80, 
     accuracy: 100, 
@@ -106,6 +47,7 @@ let moves_list = {
     effect: [0, 0]},
 
   hurricane: {
+    name: "Hurricane",
     type: flying,
     power: 110,
     accuracy: 70,
@@ -115,6 +57,7 @@ let moves_list = {
     effect: [1, 30]},
 
   extreme_speed: {
+    name: "Extreme Speed",
     type: normal,
     power: 80,
     accuracy: 100,
@@ -124,6 +67,7 @@ let moves_list = {
     effect: [0,0]},
 
   roost: {
+    name: "Roost",
     type: flying,
     power: 0,
     accuracy: 0,
@@ -133,6 +77,7 @@ let moves_list = {
     effect: [2, 50]},
 
   earthquake: {
+    name: "Earthquake",
     type: ground,
     power: 100,
     accuracy: 100,
@@ -142,6 +87,7 @@ let moves_list = {
     effect: [0,0]},
 
   iron_head: {
+    name: "Iron Head",
     type: steel,
     power: 80,
     accuracy: 100,
@@ -151,6 +97,7 @@ let moves_list = {
     effect: [3, 30]},
 
   swords_dance: {
+    name: "Swords Dance",
     type: normal,
     power: 0,
     accuracy: 0,
@@ -160,15 +107,17 @@ let moves_list = {
     effect: [4, 2]},
 
   flamethrower: {
-      type: fire,
-      power: 95,
-      accuracy: 100,
-      pp: 15,
-      category: special,
-      priority: 0,
-      effect: [5, 20]},
+    name: "Flamethrower",
+    type: fire,
+    power: 95,
+    accuracy: 100,
+    pp: 15,
+    category: special,
+    priority: 0,
+    effect: [5, 20]},
 
   focus_blast: {
+    name: "Focus Blast",
     type: fighting,
     power: 120,
     accuracy: 70,
@@ -178,6 +127,7 @@ let moves_list = {
     effect: [6, 20]},
 
   air_slash: {
+    name: "Air Slash",
     type: flying,
     power: 75,
     accuracy: 95,
@@ -187,6 +137,7 @@ let moves_list = {
     effect: [3, 30]},
 
   dragon_pulse: {
+    name: "Dragon Pulse",
     type: dragon,
     power: 85,
     accuracy: 100,
@@ -196,6 +147,7 @@ let moves_list = {
     effect: [0,0]},
 
   aura_sphere: {
+    name: "Aura Sphere",
     type: fighting,
     power: 80,
     accuracy: 0,
@@ -205,6 +157,7 @@ let moves_list = {
     effect: [0,0]},
   
   hydro_pump: {
+    name: "Hydro Pump",
     type: water,
     power: 120,
     accuracy: 80,
@@ -212,32 +165,253 @@ let moves_list = {
     category: special,
     priority: 0,
     effect: [0,0]},
+
   ice_beam: {
-    type: icce,
+    name: "Ice Beam",
+    type: ice,
     power: 90,
     accuracy: 100,
     pp: 10,
     category: special,
     priority: 0,
     effect: [7,20]},
-  }
 
-let effects_list = [0,
-  //1 Confuses target
-  (target.status = confused),
-  //2 Heals 1/2 Max Health
-  (user.hp += (user.base_hp/2)),
-  //3 Flinches target
-  (target.flinch = true),
-  //4 Increases Attack
-  (user.stat_changes.attack += 1),
-  //5 Burns Target
-  (target.status = burned),
-  //6 Lowers Sp. Def of target
-  (target.stat_changes.sp_def -= 1),
-  //7 Freezes Target
-  (target.status = frozen)
-]
+  energy_ball: {
+    name: "Energy Ball",
+    type: grass,
+    power: 90,
+    accuracy: 100,
+    pp: 10,
+    category: special,
+    priority: 0,
+    effect: [6,20]},
+
+  sludge_bomb: {
+    name: "Sludge Bomb",
+    type: poison,
+    power: 90,
+    accuracy: 100,
+    pp: 10,
+    category: special,
+    priority: 0,
+    effect: [8,30]},
+
+  energy_ball: {
+    name: "Energy Ball",
+    type: grass,
+    power: 90,
+    accuracy: 100,
+    pp: 10,
+    category: special,
+    priority: 0,
+    effect: [6,20]},
+
+  synthesis: {
+    name: "Synthesis",
+    type: grass,
+    power: 0,
+    accuracy: 0,
+    pp: 10,
+    category: healing,
+    priority: 0,
+    effect: [2, 50]},
+
+  venoshock: {
+    name: "Venoshock",
+    type: poison,
+    power: 65,
+    accuracy: 100,
+    pp: 20,
+    category: special,
+    priority: 0,
+    effect: [9, 100]},
+  blizzard: {
+    name: "Blizzard",
+    type: ice,
+    power: 120,
+    accuracy: 70,
+    pp: 5,
+    category: special,
+    priority: 0,
+    effect: [7,20]},
+  }
+  
+//let damage = 0;
+let pokemon = {
+  dragonite: {
+    name: "Dragonite",
+    //sprites: [loadImage("sprites/dragonite_front.png"), loadImage("sprites/dragonite_back.png")],
+    status: 0,
+    hp: 356,
+    attack: 403,
+    defense: 226,
+    sp_attack: 266,
+    sp_def: 236,
+    //128 speed IVS
+    speed: 176,
+    stat_changes: {
+      attack: 0,
+      defense: 0,
+      sp_attack: 0,
+      sp_def: 0,
+      speed: 0
+    },
+    type_1: dragon,
+    type_2: flying,
+    moves: {
+      m1: moves_list.dragon_claw,
+      m2: moves_list.hurricane,
+      m3: moves_list.extreme_speed,
+      m4: moves_list.roost}
+},
+garchomp: {
+  name: "Garchomp".
+  //sprites: [loadImage("sprites/garchomp_front.png"), loadImage("sprites/garchomp_back.png")],
+  status: 0,
+  hp: 357,
+  attack: 359,
+  defense: 226,
+  sp_attack: 176,
+  sp_def: 207,
+  speed: 333,
+  stat_changes: {
+    attack: 0,
+    defense: 0,
+    sp_attack: 0,
+    sp_def: 0,
+    speed: 0
+  },
+  type_1: dragon,
+  type_2: ground,
+  moves: {
+    m1: moves_list.dragon_claw,
+    m2: moves_list.earthquake,
+    m3: moves_list.iron_head,
+    m4: moves_list.swords_dance}
+},
+charizard: {
+  name: "Charizard",
+  //sprites: [loadImage("sprites/charizard_front.png"), loadImage("sprites/charizard_back.png")],
+  status: 0,
+  hp: 297,
+  attack: 155,
+  defense: 192,
+  sp_attack: 317,
+  sp_def: 207,
+  speed: 328,
+  stat_changes: {
+    attack: 0,
+    defense: 0,
+    sp_attack: 0,
+    sp_def: 0,
+    speed: 0
+  },
+  type_1: fire,
+  type_2: flying,
+  move_1: moves_list.flamethrower,
+  move_2: moves_list.dragon_pulse,
+  move_3: moves_list.air_slash,
+  move_4: moves_list.focus_blast
+},
+blastoise: {
+  name: "Blastoise",
+  //sprites: [loadImage("sprites/blastoise_front.png"), loadImage("sprites/blastoise_back.png")],
+  status: 0,
+  hp: 362,
+  attack: 153,
+  defense: 236,
+  sp_attack: 295,
+  sp_def: 247,
+  speed: 192,
+  stat_changes: {
+    attack: 0,
+    defense: 0,
+    sp_attack: 0,
+    sp_def: 0,
+    speed: 0
+  },
+  type_1: water,
+  type_2: none,
+  moves: {
+    m1: moves_list.hydro_pump,
+    m2: moves_list.dragon_pulse,
+    m3: moves_list.ice_beam,
+    m4: moves_list.aura_sphere}
+  },
+venusaur: {
+  name: "Venusuar",
+  //sprites: [loadImage("sprites/venusaur_front.png"), loadImage("sprites/venusaur_back.png")],
+  status: 0,
+  hp: 363,
+  attack: 152,
+  defense: 202,
+  sp_attack: 328,
+  sp_def: 237,
+  speed: 198,
+  stat_changes: {
+    attack: 0,
+    defense: 0,
+    sp_attack: 0,
+    sp_def: 0,
+    speed: 0
+  },
+  type_1: grass,
+  type_2: poison,
+  moves: {
+    m1: moves_list.synthesis,
+    m2: moves_list.energy_ball,
+    m3: moves_list.sludge_bomb,
+    m4: moves_list.venoshock}
+  },
+articuno: {
+  //sprites: [loadImage("sprites/articuno_front.png"), loadImage("sprites/articuno_back.png")],
+    status: 0,
+  hp: 379,
+  attack: 157,
+  defense: 236,
+  sp_attack: 317,
+  sp_def: 286,
+  speed: 212,
+  stat_changes: {
+    attack: 0,
+    defense: 0,
+    sp_attack: 0,
+    sp_def: 0,
+    speed: 0
+  },
+  type_1: ice,
+  type_2: flying,
+  moves: {
+    m1: moves_list.hurricane,
+    m2: moves_list.blizzard,
+    m3: moves_list.roost,
+    m4: moves_list.freeze_dry}
+  },
+zapdos: {
+  //sprites: [loadImage("sprites/zapdos_front.png"), loadImage("sprites/zapdos_back.png")],
+    status: 0,
+  hp: 0,
+  attack: 0,
+  defense: 0,
+  sp_attack: 0,
+  sp_def: 0,
+  speed: 0,
+  stat_changes: {
+    attack: 0,
+    defense: 0,
+    sp_attack: 0,
+    sp_def: 0,
+    speed: 0
+  },
+  type_1: none,
+  type_2: none,
+  moves: {
+    m1: moves_list.,
+    m2: moves_list.,
+    m3: moves_list.,
+    m4: moves_list.}
+  }
+}
 
 
 function setup() {
@@ -246,13 +420,75 @@ function setup() {
 
 function draw() {
   background(220);
+  //kill: console.log(pokemon.charizard.hp>damage_check(pokemon.dragonite, pokemon.charizard, pokemon.dragonite.move_1))
+  //raw damage: console.log(damage_check(pokemon.dragonite, pokemon.charizard, pokemon.dragonite.move_1))
+
 }
 
-function damage_check(user, target, move){
 
-  if (move.type in user){
-    damage += damage/2
+function damage_check(user, target, move){
+  if (move.accuracy < random(100)){
+    return "missed";
   }
+  let crit_chance = 1;
+  let damage;
+  let effects_list = [0,
+  //1 Confuses target
+  (target.status = "confused"),
+  //2 Heals 1/2 Max Health
+  (user.hp += (user.base_hp/2)),
+  //3 Flinches target
+  (target.status = concat("flinch")),
+  //4 Increases Attack
+  (user.stat_changes.attack ++),
+  //5 Burns Target
+  (target.status = "burned"),
+  //6 Lowers Sp. Def of target
+  (target.stat_changes.sp_def --),
+  //7 Freezes Target
+  (target.status = "frozen"),
+  //8 Poisons Target
+  (target.status = "poisoned"),
+  //9 Status Check
+  (damage *= hex_check(target)),
+  //10 Freeze Dry
+  (damage *= freeze_dry_check(target))
+]
+
+  if (move.category === physical){
+    damage = Math.floor(
+      Math.floor((42 * user.attack * move.power) / target.defense) / 50);
+      if (user.status === "burned" && move.category === physical){
+        damage *= 0.5;
+      }
+      if (user.stat_changes.attack >= 0){
+        damage *= 1 + (user.stat_changes.attack * 0.5)
+      }
+      if (target.stat_changes.defense <= -1){
+        damage *= 1 + (target.stat_changes.attack * -0.5)
+      }
+
+      // if (user.stat_changes.attack <=-1){
+      //   damage *= 1 + (user.stat_changes.attack * fix equation)
+      // }
+  }
+  else if (move.category === special){
+    damage = Math.floor(
+      Math.floor((42 * user.sp_attack * move.power) / target.sp_def) / 50);
+  }
+  if (move.effect[1] > random(100)){
+    effects_list[move.effect[0]];
+  }
+
+  damage *= (type_effect(target.type_1, move.type) * type_effect(target.type_2, move.type))
+
+  if ((move.type === user.type_1)||(move.type === user.type_2)){
+    damage *= 1.5;
+  }
+  if (crit_chance>random(16)){
+    damage *= 1.5;
+  }
+  return Math.floor(damage);
 }
 
 function type_effect(pokemon_type, move_type){
@@ -468,4 +704,26 @@ function type_effect(pokemon_type, move_type){
   console.log("Error: TYPE data unknown");
 
 }
+function freeze_dry_check(target){
+  if (target.type_1 === water || target.type_2 === water){
+    return 4;
+  }
+  return 1;
+}
 
+function hex_check(target){
+  if (target.status !== 0){
+    return 2;
+  }
+  return 1;
+}
+class Party {
+  constructor(){
+    this.slot_1 = random(pokemon),
+    this.slot_2 = random(pokemon),
+    this.slot_3 = random(pokemon),
+    this.slot_4 = random(pokemon),
+    this.slot_5 = random(pokemon),
+    this.slot_6 = random(pokemon)
+  }
+}
