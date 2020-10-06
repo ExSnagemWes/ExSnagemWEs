@@ -5,8 +5,10 @@ let map, MAPX, MAPY, tile_size, wes_front, wes_back, wes_left, wes_right, grass,
 //lot of variables that need to be created yet are unusable at this point
 let playerX = 6;
 let playerY = 5;
-let player_faces = "down"
-let frame = 0
+let player_faces = "down";
+let frame = 0;
+let flower_frame = 0;
+
 function preload() { 
   // Loads all files used in the program before usage to prevent potential future issues with loading and callbacks, setting them to the blank variables listed above
   map = loadStrings("tiles/map_1.txt");
@@ -17,6 +19,7 @@ function preload() {
   wes_right = [loadImage("sprites/wes_ow_right.png"), loadImage("sprites/wes_ow_right_1.png")]
   grass = loadImage("tiles/grass.png");
   tall_grass = loadImage("tiles/tall_grass.png");
+  grass_layer = loadImage("tiles/grass_layer.png")
   ledge = loadImage("tiles/ledge_center.png");
   ledge_left = loadImage("tiles/ledge_left.png");
   ledge_right = loadImage("tiles/ledge_right.png");
@@ -37,13 +40,13 @@ function preload() {
   water_top_middle = loadImage("tiles/water_top_middle.png");
   tree_top = loadImage("tiles/tree_top.png");
   tree_bottom = loadImage("tiles/tree_bottom.png");
-  flowers = loadImage("tiles/flowers.png");
+  flowers = [loadImage("tiles/flowers.png"), loadImage("tiles/flowers_1.png"), loadImage("tiles/flowers_2.png"), loadImage("tiles/flowers_3.png")];
 
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  frameRate(4)
+  frameRate(10)
   // converts string list to tileset
   for (let i=0; i<map.length; i++) {
     map[i] = map[i].split(",");
@@ -84,7 +87,7 @@ function displayGrid() {
     for (let x=0; x<MAPX; x++) {
       //Displays the appropriate tile for the number on the map_1.txt file
       if (map[x][y] === 0) {
-        image(grass, y*tile_size, x*tile_size, tile_size, tile_size)
+        image(grass, y*tile_size, x*tile_size, tile_size, tile_size);
         }
       else if (map[x][y] === 1) {
         image(grass, y*tile_size, x*tile_size, tile_size, tile_size)
@@ -95,14 +98,22 @@ function displayGrid() {
         //ledge properties go here
         }
       else if (map[x][y] === 3) {
-        image(tree_bottom, y*tile_size, x*tile_size, tile_size, tile_size)
-        //no walk code
+        image(tree_bottom, y*tile_size, x*tile_size, tile_size, tile_size);
+        //no move code
         }
       else if (map[x][y] === 4) {
         image(tree_top, y*tile_size, x*tile_size, tile_size, tile_size)
         }
       else if (map[x][y] === 8) {
-        image(flowers, y*tile_size, x*tile_size, tile_size, tile_size)
+        image(grass, y*tile_size, x*tile_size, tile_size, tile_size);
+        image(flowers[Math.floor(flower_frame)], y*tile_size, x*tile_size, tile_size, tile_size);
+        if (flower_frame < 3){
+          flower_frame += 0.5
+        }
+        else{
+          flower_frame = 0;
+        }
+        
         }
       else if (map[x][y] === 21) {
         image(ledge_left, y*tile_size, x*tile_size, tile_size, tile_size)
@@ -172,54 +183,40 @@ function keyPressed(){
   let player_faced = player_faces;
 
   if (key === "a"){
-    player_faces = "left";
-    if (col_map[playerX][playerY-1]===0 || col_map[playerX][playerY-1]===4){
-      playerY--;
-    }
+    move_left();
   }
 
   if (key === "d"){
-    player_faces = "right";
-    if(col_map[playerX][playerY+1]===0 || col_map[playerX][playerY+1]===3 || col_map[playerX][playerY+1]===4){
-      playerY++;
-      while (col_map[playerX][playerY]===3){
-        playerY++;
-      }
-    }
+    move_right();
   }
 
   if (key === "w"){
-    player_faces = "up";
-    if(col_map[playerX-1][playerY]===0 || col_map[playerX-1][playerY]===4){
-      playerX--;
-      }
+    move_up();
   }
   
   if (key === "s"){
-    player_faces = "down";
-    if (col_map[playerX+1][playerY]===0 || col_map[playerX+1][playerY]===2 || col_map[playerX+1][playerY]===4){
-      playerX++;
-      while (col_map[playerX][playerY]===2){
-        playerX++;
-      }
-    }
-
+    move_down();
   }
   if (player_faced !== player_faces){
     frame = 0;
   }
+
 }
 
-function keyTyped()
+
 
 function displayPlayer(){
   //imageMode(CENTER)
   if (player_faces === "down"){
     if (keyIsPressed && key === "s"){
       if (frame < 3){
+        if (frame ===1){
+          move_down();
+        }
         frame ++;}
       else{
         frame = 0;
+        move_down();
       }
     }
     else{
@@ -230,9 +227,13 @@ function displayPlayer(){
   else if (player_faces === "up"){
     if (keyIsPressed && key === "w"){
       if (frame < 3){
+        if (frame ===1){
+          move_up();
+        }
         frame ++;}
-      else{
-        frame = 0;
+        else{
+          frame = 0;
+          move_up();
       }
     }
     else{
@@ -246,6 +247,7 @@ function displayPlayer(){
         frame ++;}
       else{
         frame = 0;
+        move_right();
       }
     }
     else{
@@ -259,6 +261,7 @@ function displayPlayer(){
         frame ++;}
       else{
         frame = 0;
+        move_left();
       }
     }
     else{
@@ -266,5 +269,52 @@ function displayPlayer(){
     }
     image(wes_left[frame], playerY*tile_size, playerX*tile_size-(tile_size*0.3), tile_size, tile_size*1.3)
   }
-  
+  if (col_map[playerX][playerY] === 4){
+    image(grass_layer, playerY*tile_size, playerX*tile_size, tile_size, tile_size)
+  }
+}
+
+function move_left(){
+  if (player_faces === "left"){
+    if (col_map[playerX][playerY-1]===0 || col_map[playerX][playerY-1]===4){
+      playerY--;
+    }
+  }
+  else{
+    player_faces = "left";
+  }
+}
+function move_right(){
+  if (player_faces === "right"){
+  if (col_map[playerX][playerY+1]===0 || col_map[playerX][playerY+1]===3 || col_map[playerX][playerY+1]===4){
+    playerY++;
+    while (col_map[playerX][playerY]===3){
+      playerY++;
+    }
+  }
+  }
+  else{
+    player_faces = "right";
+  }
+}
+function move_up(){
+  if (player_faces === "up"){
+  if(col_map[playerX-1][playerY]===0 || col_map[playerX-1][playerY]===4){
+    playerX--;
+  }}
+  else{
+  player_faces = "up";
+}
+}
+function move_down(){
+  if (player_faces === "down"){
+  if (col_map[playerX+1][playerY]===0 || col_map[playerX+1][playerY]===2 || col_map[playerX+1][playerY]===4){
+    playerX++;
+    while (col_map[playerX][playerY]===2){
+      playerX++;
+    }
+  }}
+  else{
+  player_faces = "down";
+}
 }
