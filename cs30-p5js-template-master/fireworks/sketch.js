@@ -8,6 +8,7 @@ let fireworks = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  //frameRate(10)
   }
 
 function draw() {
@@ -28,10 +29,9 @@ function mousePressed(){
 }
 
 function uchiage_hanabi(){
-  let r = random(255);
-  let g = random(255);
-  let b = random(255);
-
+  let r = random(30, 255);
+  let g = random(30, 255);
+  let b = random(30, 255);
   let theta = 0;
   let flare_count = 100;
   let angle_increase = 2*PI/flare_count
@@ -51,31 +51,30 @@ function uchiage_hanabi(){
 
 
 class Flare{
-  constructor(x, y, r, g, b, dx, dy, angle, fuse){
-    this.x = x
-    this.y = y
-    this.dx = dx
-    this.dy = dy
-    this.r = r
-    this.g = g
-    this.b = b
+  constructor(x, y, r, g, b, dx, dy, angle, fuse, stro_color){
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+    this.dy = dy;
+    this.r = r;
+    this.g = g;
+    this.b = b;
     this.alpha = 255;
     this.radius = 3;
     this.gravity = 0.04;
-    this.height = 0
+    this.height = 0;
     this.angle = angle;
-    this.fuse = fuse
+    this.fuse = fuse;
   }
 
   display(){
-    noStroke();
-    fill(this.r, this.b, this.g, this.alpha)
+        fill(this.r, this.b, this.g, this.alpha)
     circle(this.x, this.y, this.radius*2)
   }
   fly(){
     if (this.height < height/this.fuse){
       this.y -= 4
-      this.height += 2
+      this.height += this.fuse/2
       this.x += this.angle;
       this.angle *= 1.015
       if (this.angle>0){
