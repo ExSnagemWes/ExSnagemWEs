@@ -89,7 +89,7 @@ function setup() {
   else {
     tile_size = height / MAPX;
   }
-  frameRate(8);
+  frameRate(7);
   noSmooth();
   active_map = map_1;
   active_collision = collisionMap_1;
