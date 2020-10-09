@@ -1,7 +1,7 @@
 
 
 
-let map_1, collisionMap_1, map_2, collisionMap_2, active_map, active_collision, MAPX, MAPY, tile_size, wes_front, wes_back, wes_left, wes_right, grass, tall_grass, ledge, ledge_left, ledge_right, ledge_right_corner, ledge_right_middle, ledge_right_top, big_tree_bottom_left, big_tree_bottom_right, big_tree_middle_left, big_tree_middle_right, big_tree_top_left, big_tree_top_right, water_bottom, water, water_center_left, water_center_right, water_top_left, water_top_middle, water_top_right, tree_bottom, tree_top;
+let map_1, collisionMap_1, map_2, collisionMap_2, active_map, active_collision, MAPX, MAPY, tile_size, wes_front, wes_back, wes_left, wes_right, grass, tall_grass, ledge, ledge_left, ledge_right, ledge_right_corner, ledge_right_middle, ledge_right_top, big_tree_bottom_left, big_tree_bottom_right, big_tree_middle_left, big_tree_middle_right, big_tree_top_left, big_tree_top_right, water_bottom, water, water_center_left, water_center_right, water_top_left, water_top_middle, water_top_right, tree_bottom, tree_top, bump;
 //lot of variables that need to be created yet are unusable at this point
 let playerX = 6;
 let playerY = 5;
@@ -10,6 +10,10 @@ let frame = 0;
 let flower_frame = 0;
 let left_map = true
 let shouldMapSwitch = false;
+let playerIsMoving = false;
+let moveCounter = 0;
+let moveDelay = 130;
+let run = false;
 function preload() { 
   // Loads all files used in the program before usage to prevent potential future issues with loading and callbacks, setting them to the blank variables listed above
   map_1 = loadStrings("tiles/map_1.txt");
@@ -46,6 +50,7 @@ function preload() {
   tree_bottom = loadImage("tiles/tree_bottom.png");
   flowers = [loadImage("tiles/flowers.png"), loadImage("tiles/flowers_1.png"), loadImage("tiles/flowers_2.png"), loadImage("tiles/flowers_3.png")];
   flower_2 = loadImage("tiles/flower.png");
+  bump = createAudio("audio/bump.mp3")
 }
 
 function setup() {
@@ -88,9 +93,10 @@ function setup() {
 
 function draw() {
   map_configure();
-  background(255);
+  background(0);
   displayGroundTiles();
   displayPlayer();
+  moveTimer();
   displayOverlapTiles();
 }
 function displayGroundTiles(){
@@ -149,36 +155,56 @@ function displayGroundTiles(){
       else if (active_map[x][y] === 22) {
         image(ledge_right, y*tile_size, x*tile_size, tile_size, tile_size)
         }
-        
+
+      //Displays a Right Ledge Corner
       else if (active_map[x][y] === 23) {
         image(ledge_right_corner, y*tile_size, x*tile_size, tile_size, tile_size)
         }
+
+      //Displays a Right Ledge Middle
       else if (active_map[x][y] === 24) {
         image(ledge_right_middle, y*tile_size, x*tile_size, tile_size, tile_size)
         }
+
+      //Displays a Right Ledge Top
       else if (active_map[x][y] === 25) {
         image(ledge_right_top, y*tile_size, x*tile_size, tile_size, tile_size)
         }
+
+      //Displays a Water Top Left
       else if (active_map[x][y] === 41) {
         image(water_top_left, y*tile_size, x*tile_size, tile_size, tile_size)
         }
+
+      //Displays a Water Top Middle
       else if (active_map[x][y] === 42) {
         image(water_top_middle, y*tile_size, x*tile_size, tile_size, tile_size)
         }
+
+      //Displays a Water Top Right
       else if (active_map[x][y] === 43) {
         image(water_top_right, y*tile_size, x*tile_size, tile_size, tile_size)
         }
+
+      //Displays a Water Center Left
       else if (active_map[x][y] === 44) {
         image(water_center_left, y*tile_size, x*tile_size, tile_size, tile_size)
         }
+      
+      //Displays a plain Water tile
       else if (active_map[x][y] === 45) {
         image(water, y*tile_size, x*tile_size, tile_size, tile_size)
         }
+
+      //Displays a Water Center Right
       else if (active_map[x][y] === 46) {
         image(water_center_right, y*tile_size, x*tile_size, tile_size, tile_size)
         }
+
       else if (active_map[x][y] === 48) {
-        image(water_bottom, y*tile_size, x*tile_size, tile_size, tile_size)
+        image(water_bottom, y*tile_size, x*tile_size, tile_size, tile_size);
+        image(tall_grass, y*tile_size, x*tile_size, tile_size, tile_size);
+              
         }
       else if (active_map[x][y] === 53) {
         image(big_tree_middle_left, y*tile_size, x*tile_size, tile_size, tile_size)
@@ -227,7 +253,17 @@ function displayOverlapTiles() {
 
 function keyPressed(){
   let player_faced = playerIsFacing;
-
+  //Pressing "r" toggles run
+  if (key === " "){
+    if (run === false){
+      run = true;
+      moveDelay = 80;
+    }
+    else{
+      run = false;
+      moveDelay = 130;
+    }
+  }
   if (key === "a"){
     move_left();
   }
@@ -249,24 +285,24 @@ function keyPressed(){
 
 }
 
-
-
 function displayPlayer(){
   //imageMode(CENTER)
   if (playerIsFacing === "down"){
-    if (keyIsPressed && key === "s"){
-      if (frame < 3){
-        if (frame ===1){
+    if (!(playerIsMoving)){
+      if (keyIsPressed && key === "s"){
+        if (frame < 3){
+          if (frame ===1){
+            move_down();
+          }
+          frame ++;}
+        else{
+          frame = 0;
           move_down();
         }
-        frame ++;}
+      }
       else{
         frame = 0;
-        move_down();
       }
-    }
-    else{
-      frame = 0;
     }
     image(wes_front[frame], playerY*tile_size, playerX*tile_size-(tile_size*0.3), tile_size, tile_size*1.3)
   }
@@ -323,57 +359,88 @@ function displayPlayer(){
     }
     image(wes_left[frame], playerY*tile_size, playerX*tile_size-(tile_size*0.3), tile_size, tile_size*1.3)
   }
-  if (active_collision[playerX][playerY] === 4){
+  //Checks if Player is on a Tall Grass tile and adds the grass overlay if they are
+  if (active_map[playerX][playerY] === 1 || active_map[playerX][playerY] === 48){
     image(grass_layer, playerY*tile_size, playerX*tile_size, tile_size, tile_size)
   }
 }
 
 function move_left(){
-  if (playerIsFacing === "left"){
-    if (active_collision[playerX][playerY-1]===0 || active_collision[playerX][playerY-1]===4 || active_collision[playerX][playerY-1]===5){
-      playerY--;
+  if (!(playerIsMoving)){
+    if (playerIsFacing === "left"){
+      if (active_collision[playerX][playerY-1]===0 || active_collision[playerX][playerY-1]===4 || active_collision[playerX][playerY-1]===5){
+        playerY--;
+        playerIsMoving = true;
+        moveCounter = millis();
+      }
+      else{
+        bump.play()
+      }
     }
-  }
-  else{
-    playerIsFacing = "left";
+    else{
+      playerIsFacing = "left";
+    }
   }
 }
 function move_right(){
-  if (playerIsFacing === "right"){
-  
+  if (!(playerIsMoving)){
+    if (playerIsFacing === "right"){
 
-    if (active_collision[playerX][playerY+1]===0 || active_collision[playerX][playerY+1]===3 || active_collision[playerX][playerY+1]===4 || active_collision[playerX][playerY+1]===5){
-      playerY++;
-      while (active_collision[playerX][playerY]===3){
+
+      if (active_collision[playerX][playerY+1]===0 || active_collision[playerX][playerY+1]===3 || active_collision[playerX][playerY+1]===4 || active_collision[playerX][playerY+1]===5){
         playerY++;
-        }
+        playerIsMoving = true;
+        moveCounter = millis();
+        while (active_collision[playerX][playerY]===3){
+          playerY++;
+          }
+      }
+      else{
+        bump.play()
+      }
+      
     }
-    
-  }
-  else{
-    playerIsFacing = "right";
+    else{
+      playerIsFacing = "right";
+    }
   }
 }
 function move_up(){
-  if (playerIsFacing === "up"){
-  if(active_collision[playerX-1][playerY]===0 || active_collision[playerX-1][playerY]===4 || active_collision[playerX-1][playerY]===5){
-    playerX--;
-  }}
-  else{
-  playerIsFacing = "up";
-}
+  if (!(playerIsMoving)){
+    if (playerIsFacing === "up"){
+      if(active_collision[playerX-1][playerY]===0 || active_collision[playerX-1][playerY]===4 || active_collision[playerX-1][playerY]===5){
+        playerX--;
+        playerIsMoving = true;
+        moveCounter = millis();
+      }
+      else{
+        bump.play()
+      }
+    }
+    else{
+    playerIsFacing = "up";
+   }
+  }
 }
 function move_down(){
-  if (playerIsFacing === "down"){
-  if (active_collision[playerX+1][playerY]===0 || active_collision[playerX+1][playerY]===2 || active_collision[playerX+1][playerY]===4 || active_collision[playerX+1][playerY]===5){
-    playerX++;
-    while (active_collision[playerX][playerY]===2){
-      playerX++;
+  if (!(playerIsMoving)){
+    if (playerIsFacing === "down"){
+      if (active_collision[playerX+1][playerY]===0 || active_collision[playerX+1][playerY]===2 || active_collision[playerX+1][playerY]===4 || active_collision[playerX+1][playerY]===5){
+        playerX++;
+        playerIsMoving = true;
+        moveCounter = millis();
+        while (active_collision[playerX][playerY]===2){
+          playerX++;
+        }
+      }
+      else{
+        bump.play()
+      }
+  }
+    else{
+    playerIsFacing = "down";
     }
-  }}
-  else{
-  playerIsFacing = "down";
-}
+  }
 }
 
 function map_configure(){
@@ -393,3 +460,8 @@ function map_configure(){
   }
     
 }
+function moveTimer(){
+  if (millis()>(moveCounter+moveDelay)){
+    playerIsMoving = false;
+    }
+ }

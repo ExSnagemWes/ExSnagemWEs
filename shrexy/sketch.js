@@ -1,10 +1,11 @@
-// live version at https://editor.p5js.org/schellenberg/sketches/eEMkFLoAR
+// Trent Hatzel
+// Extra for experts: Multiple inclusion of audio file usage, one debatable usage of video file
 
 let shrekx, shreky, ground, size, shrek, bad_word, walks, walkbacks, idle_on, jump_0, jump_1, jump_2, jump_3, punch_0, punch_1, punch_2, punch_3, punch_4, jump_landed, reset, edges, icon, bgm, nng, shrek_died, haha, bonk, left_bonk, right_bonk, punches, punchbacks, jumpbacks;
 let thenomions = []
-let speed = 6; //speed of walking
+let speed = 8; //speed of walking
 let jump_power = 6; //speed of elevation when jumping
-let jump_height = 30;//height and length of jump
+let jump_height = 20;//height and length of jump
 let jump = true;
 let jump_stage = 0;
 let gravity = 12; //
@@ -13,19 +14,19 @@ let frame = 0;
 let punch_stage = 0;
 let uwu_log = "";
 let uwu_active = false;
-let nomion_speed = 3;
+let nomion_speed = 2;
 let nomion_left = false;
 let damage_modifier = 1;
 let shrek_lives = 10;
 let attack_start = 0;
 let attack_use = false;
-let attack_delay = 300;
+let attack_delay = 400;
 let direction = "right";
 let points = 0;
 let delay = 0;
 let spawn_counter = 2000;
-let spawn_delay = 2000;
-
+let spawn_delay = 3000;
+let points_counter = 0;
 
 function preload() {
   bonk = loadImage("bonk.png");
@@ -54,22 +55,27 @@ function setup() {
   size = height * 0.2;
   imageMode(CENTER);
   edges = [width, 0];
-  bgm.play();
+  
+  x = width - 100;
+  y = 40;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|Initializing processes finished--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 function draw() {
+  if (points_counter === 6){
+    shrek_lives ++;
+    points_counter = 0;}
   background(0);
   if (millis()>(spawn_counter+spawn_delay)){
-    spawn_nomions()
-    spawn_counter = millis()
+    spawn_nomions();
+    spawn_counter = millis();
     if (spawn_delay>700){
-    spawn_delay -= (nomion_speed*2)
-    }
+      spawn_delay -= (nomion_speed*2);
+      }
     }
   attack_check();
   //Checks if a  forbidden word has been typed
   if (uwu_active) {
-    //bad_word = createVideo("uwu.mp4", profane);
+    bad_word = createVideo("uwu.mp4", profane);
     //^^^ Only activate in final code
     bad_word.size(windowWidth, windowHeight);
     key = 0;
@@ -231,8 +237,9 @@ function noms() {
         if (collideRectCircle((shrekx - ((width * 0.1) / 4) - (size / 4)), shreky - ((height * 0.1) / 4), size / 4, size / 4, nomion.nomx, nomion.nomy, size)) {
           if (nomion.nomion_lives) {
             nomion.nomion_lives = false;
-            nomion_speed += 0.4;
+            nomion_speed += random(0.1, 0.5);
             points++;
+            points_counter ++;
           }
         }
       }
@@ -241,8 +248,9 @@ function noms() {
         if (collideRectCircle((shrekx - ((width * 0.1) / 4) + (size / 4)), shreky - ((height * 0.1) / 4), size / 4, size / 4, nomion.nomx, nomion.nomy, size)) {
           if (nomion.nomion_lives) {
             nomion.nomion_lives = false;
-            nomion_speed += 0.4;
+            nomion_speed += random(0.1, 0.5);
             points++;
+            points_counter ++;
           }
         }
       }
@@ -437,13 +445,13 @@ function attack_check() {
     //concatonates either "U", "W", "O" onto uwu_log
     if ((uwu_log === "UWU") || (uwu_log === "OWO")) {
       uwu_active = true;
-      bad_word = createVideo("uwu.mp4", profane);
+      //bad_word = createVideo("uwu.mp4", profane);
       //^^^Deactivate in final code
     }
 
   }
   if (key === "M"){
-    bgm.stop()
+    bgm.play();
     key = "p"
   }
 }
@@ -491,6 +499,13 @@ function spawn_nomions() {
   }
 }
 
+function mouseClicked(){
+  haha.play();
+  jump = true;
+  x = mouseX;
+  y = mouseY;
+}
+
 function info() {
   // Displays the current data (shrek_lives, points)
   textSize(40);
@@ -499,7 +514,7 @@ function info() {
   textFont('Verdana');
   fill("#b3d10c");
   text(shrek_lives + " Layers", 200, 40);
-  text(points, width - 100, 40);
+  text(points, x, y);
   image(icon, 300, 20, 158, 30);
 
 
