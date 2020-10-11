@@ -8,6 +8,8 @@
 //line 255 equation copied and slightly modified for variables that would be predefined in this instance
 
 //Convenience. Pressing shift constantly really slows me down
+let playerParty;
+let cpuParty;
 let physical = "ph"
 let special = "sp"
 let healing = "heal"
@@ -234,6 +236,15 @@ let moves_list = {
     category: special,
     priority: 0,
     effect: [7,20]},
+  freeze_dry: {
+    name: "Freeze Dry",
+    type: ice,
+    power: 70,
+    accuracy: 10,
+    pp: 20,
+    category: special,
+    priority: 0,
+    effect: [10,100]},
   }
   
 //let damage = 0;
@@ -245,49 +256,47 @@ let pokemon = {
     hp: 356,
     attack: 403,
     defense: 226,
-    sp_attack: 266,
+    sp_atk: 266,
     sp_def: 236,
     //128 speed IVS
     speed: 176,
     stat_changes: {
       attack: 0,
       defense: 0,
-      sp_attack: 0,
+      sp_atk: 0,
       sp_def: 0,
       speed: 0
     },
     type_1: dragon,
     type_2: flying,
-    moves: {
-      m1: moves_list.dragon_claw,
-      m2: moves_list.hurricane,
-      m3: moves_list.extreme_speed,
-      m4: moves_list.roost}
+    moves: [moves_list.dragon_claw, 
+      moves_list.hurricane, 
+      moves_list.extreme_speed, 
+      moves_list.roost]
 },
 garchomp: {
-  name: "Garchomp".
+  name: "Garchomp",
   //sprites: [loadImage("sprites/garchomp_front.png"), loadImage("sprites/garchomp_back.png")],
   status: 0,
   hp: 357,
   attack: 359,
   defense: 226,
-  sp_attack: 176,
+  sp_atk: 176,
   sp_def: 207,
   speed: 333,
   stat_changes: {
     attack: 0,
     defense: 0,
-    sp_attack: 0,
+    sp_atk: 0,
     sp_def: 0,
     speed: 0
   },
   type_1: dragon,
   type_2: ground,
-  moves: {
-    m1: moves_list.dragon_claw,
-    m2: moves_list.earthquake,
-    m3: moves_list.iron_head,
-    m4: moves_list.swords_dance}
+  moves: [moves_list.dragon_claw,
+    moves_list.earthquake,
+    moves_list.iron_head,
+    moves_list.swords_dance]
 },
 charizard: {
   name: "Charizard",
@@ -296,22 +305,22 @@ charizard: {
   hp: 297,
   attack: 155,
   defense: 192,
-  sp_attack: 317,
+  sp_atk: 317,
   sp_def: 207,
   speed: 328,
   stat_changes: {
     attack: 0,
     defense: 0,
-    sp_attack: 0,
+    sp_atk: 0,
     sp_def: 0,
     speed: 0
   },
   type_1: fire,
   type_2: flying,
-  move_1: moves_list.flamethrower,
-  move_2: moves_list.dragon_pulse,
-  move_3: moves_list.air_slash,
-  move_4: moves_list.focus_blast
+  moves: [moves_list.flamethrower,
+    moves_list.dragon_pulse,
+    moves_list.air_slash,
+    moves_list.focus_blast]
 },
 blastoise: {
   name: "Blastoise",
@@ -320,107 +329,83 @@ blastoise: {
   hp: 362,
   attack: 153,
   defense: 236,
-  sp_attack: 295,
+  sp_atk: 295,
   sp_def: 247,
   speed: 192,
   stat_changes: {
     attack: 0,
     defense: 0,
-    sp_attack: 0,
+    sp_atk: 0,
     sp_def: 0,
     speed: 0
   },
   type_1: water,
   type_2: none,
-  moves: {
-    m1: moves_list.hydro_pump,
-    m2: moves_list.dragon_pulse,
-    m3: moves_list.ice_beam,
-    m4: moves_list.aura_sphere}
+  moves: [moves_list.hydro_pump,
+    moves_list.dragon_pulse,
+    moves_list.ice_beam,
+    moves_list.aura_sphere]
   },
 venusaur: {
-  name: "Venusuar",
+  name: "Venusaur",
   //sprites: [loadImage("sprites/venusaur_front.png"), loadImage("sprites/venusaur_back.png")],
   status: 0,
   hp: 363,
   attack: 152,
   defense: 202,
-  sp_attack: 328,
+  sp_atk: 328,
   sp_def: 237,
   speed: 198,
   stat_changes: {
     attack: 0,
     defense: 0,
-    sp_attack: 0,
+    sp_atk: 0,
     sp_def: 0,
     speed: 0
   },
   type_1: grass,
   type_2: poison,
-  moves: {
-    m1: moves_list.synthesis,
-    m2: moves_list.energy_ball,
-    m3: moves_list.sludge_bomb,
-    m4: moves_list.venoshock}
+  moves: [moves_list.synthesis,
+    moves_list.energy_ball,
+    moves_list.sludge_bomb,
+    moves_list.venoshock]
   },
 articuno: {
+  name: "Articuno",
   //sprites: [loadImage("sprites/articuno_front.png"), loadImage("sprites/articuno_back.png")],
-    status: 0,
+  status: 0,
   hp: 379,
   attack: 157,
   defense: 236,
-  sp_attack: 317,
+  sp_atk: 317,
   sp_def: 286,
   speed: 212,
   stat_changes: {
     attack: 0,
     defense: 0,
-    sp_attack: 0,
+    sp_atk: 0,
     sp_def: 0,
     speed: 0
   },
   type_1: ice,
   type_2: flying,
-  moves: {
-    m1: moves_list.hurricane,
-    m2: moves_list.blizzard,
-    m3: moves_list.roost,
-    m4: moves_list.freeze_dry}
-  },
-zapdos: {
-  //sprites: [loadImage("sprites/zapdos_front.png"), loadImage("sprites/zapdos_back.png")],
-    status: 0,
-  hp: 0,
-  attack: 0,
-  defense: 0,
-  sp_attack: 0,
-  sp_def: 0,
-  speed: 0,
-  stat_changes: {
-    attack: 0,
-    defense: 0,
-    sp_attack: 0,
-    sp_def: 0,
-    speed: 0
-  },
-  type_1: none,
-  type_2: none,
-  moves: {
-    m1: moves_list.,
-    m2: moves_list.,
-    m3: moves_list.,
-    m4: moves_list.}
+  moves: [moves_list.hurricane,
+    moves_list.blizzard,
+    moves_list.roost,
+    moves_list.freeze_dry]
   }
 }
 
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  playerParty = new Party();
+  cpuParty = new Party();
 }
 
 function draw() {
   background(220);
-  //kill: console.log(pokemon.charizard.hp>damage_check(pokemon.dragonite, pokemon.charizard, pokemon.dragonite.move_1))
+  //kill: console.log(pokemon.charizard.hp>damage_check(pokemon.dragonite, pokemon.charizard, pokemon.dragonite.moves[0])
   //raw damage: console.log(damage_check(pokemon.dragonite, pokemon.charizard, pokemon.dragonite.move_1))
 
 }
@@ -474,8 +459,16 @@ function damage_check(user, target, move){
   }
   else if (move.category === special){
     damage = Math.floor(
-      Math.floor((42 * user.sp_attack * move.power) / target.sp_def) / 50);
+      Math.floor((42 * user.sp_atk * move.power) / target.sp_def) / 50);
+
+      if (user.stat_changes.sp_atk >= 0){
+        damage *= 1 + (user.stat_changes.sp_atk * 0.5)
+      }
+      if (target.stat_changes.sp_def <= -1){
+        damage *= 1 + (target.stat_changes.sp_def * -0.5)
+      }
   }
+
   if (move.effect[1] > random(100)){
     effects_list[move.effect[0]];
   }
@@ -485,9 +478,10 @@ function damage_check(user, target, move){
   if ((move.type === user.type_1)||(move.type === user.type_2)){
     damage *= 1.5;
   }
-  if (crit_chance>random(16)){
-    damage *= 1.5;
-  }
+  
+  // if (crit_chance>random(16)){
+  //   damage *= 1.5;
+  // }
   return Math.floor(damage);
 }
 
@@ -502,7 +496,7 @@ function type_effect(pokemon_type, move_type){
     return 1;
   }
 
-  if (pokemon_type === bug){
+  else if (pokemon_type === bug){
 
     if (move_type === fire || move_type === rock || move_type === flying){
       return 2;
@@ -513,7 +507,7 @@ function type_effect(pokemon_type, move_type){
     return 1;
   }
 
-  if (pokemon_type === electric){
+  else if (pokemon_type === electric){
     if (move_type === ground){
       return 2;
     }
@@ -523,7 +517,7 @@ function type_effect(pokemon_type, move_type){
     return 1;
   }
 
-  if (pokemon_type === flying){
+  else if (pokemon_type === flying){
     if (move_type === ice || move_type === rock || move_type === electric){
       return 2;
     }
@@ -538,7 +532,7 @@ function type_effect(pokemon_type, move_type){
     }
   }
   
-  if (pokemon_type === dragon){
+  else if (pokemon_type === dragon){
     if (move_type === fairy || move_type === dragon || move_type === ice){
       return 2;
     }
@@ -550,7 +544,7 @@ function type_effect(pokemon_type, move_type){
     }
   }
 
-  if (pokemon_type === ice){
+  else if (pokemon_type === ice){
     if (move_type === rock || move_type === steel || move_type === fire || move_type === fighting){
       return 2;
     }
@@ -562,7 +556,7 @@ function type_effect(pokemon_type, move_type){
     }
   }
   
-  if (pokemon_type === fairy){
+  else if (pokemon_type === fairy){
     if (move_type === poison || move_type === steel){
       return 2;
     }
@@ -575,7 +569,7 @@ function type_effect(pokemon_type, move_type){
     return 1;
   }
 
-  if (pokemon_type === water){
+  else if (pokemon_type === water){
     if (move_type === electric || move_type === grass){
       return 2;
     }
@@ -585,7 +579,7 @@ function type_effect(pokemon_type, move_type){
     return 1;
   }
 
-  if (pokemon_type === fire){
+  else if (pokemon_type === fire){
     if (move_type === water || move_type === rock || move_type === ground){
       return  2;
     }
@@ -595,7 +589,7 @@ function type_effect(pokemon_type, move_type){
     return 1;
   }
 
-  if (pokemon_type === steel){
+  else if (pokemon_type === steel){
     if (move_type === fighting || move_type === fire || move_type === ground){
       return 2;
     }
@@ -609,7 +603,7 @@ function type_effect(pokemon_type, move_type){
     return 1;
   }
 
-  if (pokemon_type === psychic){
+  else if (pokemon_type === psychic){
     if (move_type === dark || move_type === ghost || move_type === bug){
       return 2;
     }
@@ -619,7 +613,7 @@ function type_effect(pokemon_type, move_type){
     return 1;
   }
 
-  if (pokemon_type === dark){
+  else if (pokemon_type === dark){
     if (move_type === fairy || move_type === fighting || move_type === bug){
       return 2;
     }
@@ -632,7 +626,7 @@ function type_effect(pokemon_type, move_type){
     return 1;
   }
 
-  if (pokemon_type === fighting){
+  else if (pokemon_type === fighting){
     if (move_type === psychic || move_type === flying || move_type === fairy){
       return 2;
     }
@@ -642,7 +636,7 @@ function type_effect(pokemon_type, move_type){
     return 1;
   }
 
-  if (pokemon_type === ghost){
+  else if (pokemon_type === ghost){
     if (move_type === ghost || move_type === dark){
       return 2;
     }
@@ -654,7 +648,7 @@ function type_effect(pokemon_type, move_type){
     }
   }
 
-  if (pokemon_type === poison){
+  else if (pokemon_type === poison){
     if (move_type === ground || move_type === psychic){
       return 2;
     }
@@ -664,7 +658,7 @@ function type_effect(pokemon_type, move_type){
     return 1;
   }
 
-  if (pokemon_type === grass){
+  else if (pokemon_type === grass){
     if (move_type === fire || move_type === ice || move_type === bug || move_type === poison || move_type === flying){
       return 2;
     }
@@ -674,7 +668,7 @@ function type_effect(pokemon_type, move_type){
     }
   }
 
-  if (pokemon_type === ground){
+  else if (pokemon_type === ground){
     if (move_type === water || move_type === grass || move_type === ice){
       return 2;
     }
@@ -689,7 +683,7 @@ function type_effect(pokemon_type, move_type){
     return 1;
   }
 
-  if (pokemon_type === rock){
+  else if (pokemon_type === rock){
     if (move_type === steel || move_type === ground || move_type === grass || move_type === water || move_type === fighting){
       return 0;
     }
@@ -698,12 +692,13 @@ function type_effect(pokemon_type, move_type){
     }
     return 1;
   }
-  if (pokemon_type === none){
+  else if (pokemon_type === none){
     return 1;
   }
   console.log("Error: TYPE data unknown");
 
 }
+
 function freeze_dry_check(target){
   if (target.type_1 === water || target.type_2 === water){
     return 4;
@@ -717,6 +712,27 @@ function hex_check(target){
   }
   return 1;
 }
+
+function find_best_damage(user, target){
+  let damage_holder = [];
+  for (let i = 0; i<user.moves.length; i++){
+    damage_holder.push(damage_check(user, target, user.moves[i]))
+  }
+  return damage_holder
+  if (damage_holder[0] === max(damage_holder)){
+   return 0;
+  }
+  else if (damage_holder[1] === max(damage_holder)){
+    return 1;
+   }
+  else if (damage_holder[2] === max(damage_holder)){
+    return 2;
+   }
+  else if (damage_holder[3] === max(damage_holder)){
+    return 3;
+   }
+}
+
 class Party {
   constructor(){
     this.slot_1 = random(pokemon),
@@ -725,5 +741,8 @@ class Party {
     this.slot_4 = random(pokemon),
     this.slot_5 = random(pokemon),
     this.slot_6 = random(pokemon)
+  }
+  summary(){
+    text(this.slot_1)
   }
 }
